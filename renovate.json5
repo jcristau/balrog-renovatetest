@@ -37,18 +37,17 @@
   ],
   "customManagers": [
     // .taskcluster.yml decision image
+    // ideally this would use the jsonata `customType`, which would be more robust, but
+    // it does not support updating digests
+    // https://github.com/renovatebot/renovate/discussions/37921#discussioncomment-14355017
     {
-      "customType": "jsonata",
-      "fileFormat": "yaml",
+      "customType": "regex",
       "datasourceTemplate": "docker",
       "managerFilePatterns": [".taskcluster.yml"],
       "matchStrings": [
-        // jsonata query to extract docker image name, tag, and digest from a .taskcluster.yml
-        // the query is located between the curly braces, and is a value such as:
         // mozillareleases/taskgraph:decision-v14.4.1@sha256:d5116d01d51856be2c143f260d0ba44f9b07576aa7104744bb94335534de2638
-        '**.payload.image.{"depName": $substringBefore(":"), "currentValue": $substringBefore($substringAfter(":"), "@"), "currentDigest": $substringAfter("@")}'
+        "image: (?<depName>\\S+):(?<currentValue>\\S+)@(?<currentDigest>\\S+)"
       ],
-      "autoReplaceStringTemplate": "{{depName}}:{{newValue}}@{{newDigest}}"
     }
   ]
 }
