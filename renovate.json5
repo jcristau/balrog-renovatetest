@@ -45,9 +45,13 @@
       "datasourceTemplate": "docker",
       "managerFilePatterns": [".taskcluster.yml"],
       "matchStrings": [
+        // identify docker image definitions by looking for a line like:
         // image: mozillareleases/taskgraph:decision-v14.4.1@sha256:d5116d01d51856be2c143f260d0ba44f9b07576aa7104744bb94335534de2638
         "image: (?<depName>\\S+):(?<currentValue>\\S+)@(?<currentDigest>\\S+)"
       ],
+      // overwrite the version parsing. necessary because of the `decision-v` prefix
+      // we have on the image tags. without this, parsing fails and no updates will
+      // be found
       "versioningTemplate": "regex:^decision-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     }
   ]
